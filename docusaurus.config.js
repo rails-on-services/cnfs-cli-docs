@@ -24,7 +24,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/rails-on-services/cnfs-cli/tree/main/packages/create-docusaurus/templates/shared/',
         },
         blog: {
           showReadingTime: true,
@@ -49,28 +49,28 @@ const config = {
           src: 'img/logo.svg',
         },
         items: [
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Tutorial',
-          },
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
-            position: 'right',
-          },
+          { type: 'doc', docId: 'intro', position: 'left', label: 'Orig Tutorial', },
+          { to: '/blog', label: 'Orig Blog', position: 'left' },
+          { href: 'https://github.com/rails-on-services/cnfs-cli', label: 'GitHub', position: 'right', },
         ],
       },
       footer: {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Tutorials',
             items: [
               {
                 label: 'Tutorial',
+                to: '/tutorials/intro',
+              },
+            ],
+          },
+          {
+            title: 'Docs',
+            items: [
+              {
+                label: 'Docs',
                 to: '/docs/intro',
               },
             ],
@@ -106,9 +106,10 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} cnfs.io, Built with Docusaurus.`,
       },
       prism: {
+        additionalLanguages: ['ruby'],
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },

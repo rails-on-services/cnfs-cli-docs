@@ -1,0 +1,142 @@
+---
+sidebar_label: Overview
+title: Segments Overview
+sidebar_position: 1
+---
+
+:::info After reading this guide, you will know:
+
+:heavy_check_mark: What is a Segment and how to configure the Root Segment and multiple child segments
+
+:heavy_check_mark: How cloudctl invokes tools to perform operations on targets
+
+:heavy_check_mark: How to quickly generate assets for your project
+:::
+
+## Overview
+
+- Segments are used to organize a project into a hierarchy of child segments.
+- All projects begin with a single segment called the `Root Segment`.
+- Segments typically contain assets as well as child segments.
+- Other than the `Root Segment` all child segments have a user defined type.
+- User defined segment types are specified in the project configuration.
+- When running the cli, specify one or more segment types to target the exact segment in which to perform operations.
+- There is no limit to the depth and number of types of the child segment hierarchy.
+
+### Typical Project Hierarchies
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="apple" label="Root Segment Only" default>
+
+In this basic example all assets belong to the `Root Segment` and all operations are applied to assets in the Root Segment
+
+```shell
+segments
+|-- providers.yml
+|-- provisioners.yml
+|-- repositories.yml
+|-- runtimes.yml
+`-- users.yml
+```
+
+</TabItem>
+<TabItem value="orange" label="Root + Environments">
+
+In this example the project has a `user defined segment type` named `environment`.
+
+```ruby title="config/application.rb"
+module Blog
+  class Application < Cnfs::Application
+    # ...
+    config.segments.environment = { aliases: '-e', env: 'env' }
+    # ...
+  end
+end
+```
+
+The `Root Segment` has two child segments `development` and `production`
+and all segments have multiple asset types defined:
+
+```shell
+segments
+|-- development
+|   |-- plans.yml
+|   `-- resources
+|       |-- cap4.yml
+|       `-- cluster.yml
+|-- development.yml
+|-- production
+|   |-- resources.yml
+|   `-- users.yml
+|-- production.yml
+|-- providers.yml
+|-- provisioners.yml
+|-- repositories.yml
+`-- resources.yml
+|-- runtimes.yml
+`-- users.yml
+```
+
+The project configuration `config.segments.environment = { aliases: '-e', env: 'env' }` allows either of the follwing:
+
+```shell
+$ cnfs <command> -e development
+```
+
+```shell
+$ CNFS_ENV=development cnfs <command>
+```
+
+</TabItem>
+<TabItem value="banana" label="Root + Stacks + Environments">
+
+```yaml title="config/segments.yml"
+segments_type: environment
+```
+
+```shell
+segments
+|-- backend
+|   |-- development
+|   |   |-- plans.yml
+|   |   `-- resources
+|   |       |-- cap4.yml
+|   |       `-- cluster.yml
+|   |-- development.yml
+|   `-- resources.yml
+|-- backend.yml
+|-- frontend
+|   |-- development
+|   `-- development.yml
+|-- frontend.yml
+|-- providers.yml
+|-- provisioners.yml
+|-- repositories.yml
+|-- runtimes.yml
+`-- users.yml
+```
+
+</TabItem>
+</Tabs>
+
+
+### Root Segment
+ configured in `config/segments.yml`
+
+
+Project declares a stack segment. Back end and frontend are component instances of the stack segment. They in turn define their segment
+
+```shell
+segment_type stack
+default_segment_name cap2
+default_runtime compose
+default_resource instance
+default_provisioner terraform
+default_repository_name Scilly
+default_service_name
+default_user_name
+```
+

@@ -1,55 +1,23 @@
 ---
-sidebar_label: 'Hi!'
-sidebar_position: 3
+sidebar_label: Intro
+sidebar_position: 1
 ---
 
-# Hello
+This guide covers getting up and running with Cloud Native Full Stack
 
-:::tip My tip
+:::info After reading this guide, you will know:
 
-Use this awesome feature option
+:heavy_check_mark: What is a Segment and how to configure the Root Segment and multiple child segments
 
+:heavy_check_mark: What is an Asset and the three Asset types: Operator, Target and Generic
+
+:heavy_check_mark: How cloudctl invokes tools to perform operations on targets
+
+:heavy_check_mark: How to quickly generate assets for your project
 :::
 
-:::danger Take care
+## Overview
 
-This action is dangerous
-
-:::
-
-This is my **first Docusaurus document**!
-```yaml title="<project_root>/segments/users.yml"
----
-name: joe
-  config: {}
-```
-
-```yaml title="<project_root>/segments/plans.yml"
----
-name: joe
-  type: Terraform::Plan
-  module: https://git.github.com/this/that
-  config: {}
-```
-
-```ruby title="/docs/hello.md"
-module Blan
-  class Hey
-    def hello_docusaurus
-      return 'hey now!'
-    end
-
-    def ten
-      3 + 4
-    end
-
-    def tenn() = 'this'
-  end
-end
-```
-
-```jsx
-function HelloDocusaurus() {
-  return <h1>Hello, Docusaurus!</h1>;
-}
-```
+- Segments are used to organize your project. Segments contain assets and optionally additional segments. Each project comes with a default root segment
+- Assets belong to segments and are one of three types: Operator, Target and Generic
+- Operators 'operate' or perform actions on Targets. For example, Docker Compose is an Operator that starts and stops (the actions) services (the Target)

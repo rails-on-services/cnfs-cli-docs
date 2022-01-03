@@ -1,0 +1,128 @@
+---
+title: Assets
+sidebar_label: Assets
+sidebar_position: 3
+---
+
+## Overview
+
+- Things: dependencies images providers resources services users (blueprints registries assets)
+- Operators: provisioners repositories runtimes (builders configurators)
+
+- Builders manage images; This could be compose/skaffold to make images or packer to create images
+- Configurators manage playbooks; This could be Ansible to run playbooks on local or remote machines
+- Provisioners create/destroy resources, e.g. Terraform, Pulumi, aws-cdk, etc
+- Runtimes manage content, i.e. services, on resources, e.g. Compose, Skaffold, Bucket
+
+Repositories create/destroy service implementations in repositories
+
+Components: component project
+Support: context context_component node runtime/services (provisioner/resources repository/services ?)
+
+```yaml title="<project_root>/segments/users.yml"
+---
+name: joe
+  config: {}
+```
+
+```yaml title="<project_root>/segments/plans.yml"
+---
+name: joe
+  type: Terraform::Plan
+  module: https://git.github.com/this/that
+  config: {}
+```
+
+## Operators
+
+
+class Runtime
+
+- This is the base class for classes that manage services. It is an STI class that provides the underlying db columns and any common methods
+- defines the commands method that is a contract for the subclasses to implement
+
+All assets managed by operators have state and callbacks. This is the Target concern
+Eg if an RDS db is about to be destroyed by terraform then it can execute a before_destroy and do something eg pg_dump the data
+So this is a standard callback invocation from Operators
+
+1. State is managed in the asset's cache_file so those files should be merged in when building the context
+2. To invoke a command on an Operator call Operator#execute function. This will invoke callbacks on the operator and its targets
+
+## Operators and Targets
+
+
+1. Operators need to update state on targets and/or invoke their callbacks, eg before Provisioner destroys a resource have to execute callback and maybe even can_destroy?
+
+- Operator classes define commands array
+- Operator Concern defines target_callbacks array
+- Target class method defines its operator
+- Target Concern defines callbacks based on Target.operator.target_callbacks
+
+Image can implement before_push and after_pull
+Resource has before_destroy and after_create
+Service can implement after_start and before_terminate
+
+If an EC2 resource is running docker containers and it is about to be destroyed it calls the resource before_destroy which can invoke before_terminate on all services running on itself
+
+Could integrate with slack to notify on events
+
+### Inherit
+
+
+### Enable
+
+
+### Abstract
+
+
+## Generic
+
+### Resources
+
+- runtime_type also so it gets the right type. This is a validation on the class itself rather than in configuration
+- same thing with provider. Aws resources must have an Aws provider
+- EC2 resources should be auto populated with the provider so I can invoke list methods without needing to configure the provider
+- Resource has a validator that if provider is set that it must be of a specific type, eg AWS resource types must have an AWS type provider
+- log a warning if the validation failed
+
+### Repositories
+
+```shell
+The CLI will automatically search each subdirectory of <repository_root>
+Project components that reference repository components need to supply the entire component path relative from <project_root>/src
+component_path:  <repository_root>/<component_name>
+
+repository_root/<component_name>/component.yml
+repository_root/<component_name>/app
+repository_root/<component_name>/component
+repository_root/<component_name>/config/initializers
+repository_root/src
+
+OR
+If component directories are in a different location then <repository_root> create a file <repository_root>/repository.yml with the following contents:
+components_path: <relative_path_to_components>
+
+repository_root/components/<component_name>/component.yml
+repository_root/components/<component_name>/app
+repository_root/cnfs/components/<component_name>/component
+repository_root/cnfs/components/<component_name>/config/initializers
+repository_root/cnfs/components/<component_name>/src
+```
+
+### Providers and Provisioners
+
+
+- There are multiple provider types, e.g. aws, google, proxmox, rest, etc
+- Each provider is an STI type so that it can:
+  - define configuration values for that specific provider, e.g. aws region and access_key_id
+  - define values that need to be encrypted, e.g. aws secret_access_key and proxmox pm_password
+  - validate the configuration
+  - The Provider STI classes are from gems or repository components but as STI classes they cannot add fields to the base class
+- Provider values for Provisioners:
+  - base Provider is Provisioner agnostic
+  - different provisioners may require different values in the config, e.g. TF provider for Proxmox needs the URL to d/l the provider and the attributes, e.g. pm_user, pm_password could be different for Pulumi. The AWS keys are probably standard between provisioners, but this is not guaranteed, it's only by convention
+  - So each Provider must implement as_<provisioner_type> which returns a hash of the relevant values required by the Provisioner which means that providers have to support specific provisioners and it's possible that a provider type, e.g. AWS, only supports Terraform and CloudFormation but not Pulumi
+  - Provisioners and their templates do not have specific knowledge of any provider. They just call provider#as_<provisioner_type>
+  - So Provisioners define what data is needed from each Provider type and the Provider must implement the method to return the required data
+- Custom Provider, e.g. Proxmox, in a Repository Component
+  - For each Provisioner type, e.g. Terraform, to be supported, implement the as_<provider_type> method

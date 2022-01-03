@@ -9,10 +9,9 @@ The best way to read this guide is to follow it step by step. All steps are esse
 By following along with this guide, you'll create a CNFS project called blog, a (very) simple set of infrastructure
 for a weblog. Before you can start building the application, you need to make sure that you have CNFS itself installed.
 
-:::tip
+:::note
 The examples below use $ to represent your terminal prompt in a UNIX-like OS, though it may have been customized to
  appear differently. If you are using Windows, your prompt will look something like C:\source_code>.
-
 :::
 
 ## Installing Cnfs
@@ -102,6 +101,14 @@ The blog directory will have a number of generated files and folders that make u
  Most of the work in this tutorial will happen in the segments folder, but here's a basic rundown on the function 
 of each of the files and folders that Rails creates by default:
 
+| File/Folder | Purpose |
+| ----------- | ----------- |
+| app/ | Title       |
+| config/ | Contains configuration for your application's routes, database, and more. This is covered in more detail in [Configuring Rails Applications](../guides/project%20configuration). |
+| segments/ | Text        |
+| Gemfile | Text        |
+
+ 
 ```shell
 /home/admin/projects/scratch/pr1
 |-- Gemfile
